@@ -1,0 +1,105 @@
+version: '3.9'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: fitness-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-fitness_wellness}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api-gateway:
+    build: ./services/api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./services/api-gateway/.env.example
+    depends_on:
+      - auth-service
+      - member-service
+      - membership-service
+      - workout-service
+      - booking-service
+      - notification-service
+
+  auth-service:
+    build: ./services/auth-service
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "4001:4001"
+    env_file:
+      - ./services/auth-service/.env.example
+    depends_on:
+      - mysql
+
+  member-service:
+    build: ./services/member-service
+    container_name: member-service
+    restart: unless-stopped
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./services/member-service/.env.example
+    depends_on:
+      - mysql
+
+  membership-service:
+    build: ./services/membership-service
+    container_name: membership-service
+    restart: unless-stopped
+    ports:
+      - "4003:4003"
+    env_file:
+      - ./services/membership-service/.env.example
+    depends_on:
+      - mysql
+
+  workout-service:
+    build: ./services/workout-service
+    container_name: workout-service
+    restart: unless-stopped
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./services/workout-service/.env.example
+    depends_on:
+      - mysql
+
+  booking-service:
+    build: ./services/booking-service
+    container_name: booking-service
+    restart: unless-stopped
+    ports:
+      - "4005:4005"
+    env_file:
+      - ./services/booking-service/.env.example
+    depends_on:
+      - mysql
+      - notification-service
+
+  notification-service:
+    build: ./services/notification-service
+    container_name: notification-service
+    restart: unless-stopped
+    ports:
+      - "4006:4006"
+    env_file:
+      - ./services/notification-service/.env.example
+    depends_on:
+      - mysql
+
+volumes:
+  mysql_data:

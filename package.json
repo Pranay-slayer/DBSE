@@ -1,0 +1,23 @@
+{
+  "name": "fitness-wellness-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n API,WEB -c green,cyan \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "node backend/server.js",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:services": "concurrently -n GATEWAY,AUTH,MEMBER,PLAN,WORKOUT,BOOKING,NOTIF -c green,yellow,blue,magenta,cyan,red,gray \"npm:dev:gateway\" \"npm:dev:auth\" \"npm:dev:member\" \"npm:dev:membership\" \"npm:dev:workout\" \"npm:dev:booking\" \"npm:dev:notification\"",
+    "dev:gateway": "node services/api-gateway/src/server.js",
+    "dev:auth": "node services/auth-service/src/server.js",
+    "dev:member": "node services/member-service/src/server.js",
+    "dev:membership": "node services/membership-service/src/server.js",
+    "dev:workout": "node services/workout-service/src/server.js",
+    "dev:booking": "node services/booking-service/src/server.js",
+    "dev:notification": "node services/notification-service/src/server.js",
+    "seed": "npm --prefix backend run seed",
+    "start": "concurrently -n API,WEB -c green,cyan \"npm:dev:backend\" \"npm:dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
